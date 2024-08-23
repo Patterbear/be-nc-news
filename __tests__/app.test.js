@@ -1,4 +1,5 @@
 const { topicData, articleData, userData, commentData } = require('../db/data/test-data/index');
+const endpoints = require('../endpoints.json');
 const app = require('../app');
 const seed = require('../db/seeds/seed');
 const db = require('../db/connection');
@@ -38,6 +39,18 @@ describe('GET /api/topics', () => {
                 expect(topic.hasOwnProperty('slug')).toBe(true);
                 expect(topic.hasOwnProperty('description')).toBe(true);
             }
+        });
+    });
+});
+
+
+describe('GET /api', () => {
+    test('returns contents of endpoints.json', () => {
+        return request(app)
+        .get('/api')
+        .expect(200)
+        .then((response) => {
+            expect(JSON.parse(response.text)).toEqual(endpoints);
         });
     });
 });
