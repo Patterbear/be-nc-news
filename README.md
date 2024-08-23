@@ -4,7 +4,8 @@ To connect to the two databases to run this application locally, you must:
 
 1. Create two files in the main directory named '.env.development' and '.env.test'
 2. Type into them 'PGDATABASE=nc_news' and 'PGDATABASE=nc_news_test', respectively.
-3. Run the `npm run setup-dbs` and `npm run seed` commands
+3. Run the `npm install` command to install required packages
+4. Run the `npm run setup-dbs` and `npm run seed` commands to create and seed the databases
 
 
 
