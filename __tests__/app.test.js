@@ -1,5 +1,5 @@
 const testData = require('../db/data/test-data/index');
-const endpoints = require('../endpoints.json');
+const endpoints = require('../endpoints');
 const app = require('../app');
 const seed = require('../db/seeds/seed');
 const db = require('../db/connection');
@@ -38,7 +38,7 @@ describe('GET /api', () => {
         .get('/api')
         .expect(200)
         .then((response) => {
-            expect(JSON.parse(response.text)).toEqual(endpoints);
+            expect(response.body).toEqual(endpoints);
         });
     });
 });
