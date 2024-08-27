@@ -26,7 +26,7 @@ exports.selectArticles = () => {
         articles.created_at,
         articles.votes,
         articles.article_img_url,
-        COUNT(comments.article_id) AS comment_count
+        COUNT(comments.article_id)::INTEGER AS comment_count
         FROM articles
         LEFT JOIN comments
         ON articles.article_id = comments.article_id
@@ -35,11 +35,6 @@ exports.selectArticles = () => {
 
     return db.query(query)
     .then((result) => {
-        // cast 'comment_count' to number
-        for(article of result.rows) {
-            article.comment_count = parseInt(article.comment_count);
-        }
-
         return result.rows;
     });
 }

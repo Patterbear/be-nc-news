@@ -96,6 +96,8 @@ describe('GET /api/articles', () => {
 
             expect(Array.isArray(articles)).toBe(true);
 
+            expect(articles.length > 0).toBe(true);
+
             expect(articles).toBeSortedBy('created_at', {descending: true});
 
             for(article of articles) {
