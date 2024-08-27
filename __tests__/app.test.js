@@ -45,7 +45,7 @@ describe('GET /api', () => {
 
 
 describe('GET /api/articles/:article_id', () => {
-    test('returns article object with correct properties', () => {
+    test('returns correct article object with correct properties', () => {
         return request(app)
         .get('/api/articles/1')
         .expect(200)
@@ -65,6 +65,7 @@ describe('GET /api/articles/:article_id', () => {
                 article_img_url: expect.any(String)
             });
 
+            expect(article.article_id).toBe(1);
         });
     });
     test('returns 404 error message if given correctly formatted ID that does not exist', () => {
