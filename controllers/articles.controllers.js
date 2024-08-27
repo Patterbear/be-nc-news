@@ -1,5 +1,6 @@
+const articles = require('../db/data/test-data/articles');
 const { convertTimestampToDate } = require('../db/seeds/utils');
-const { selectArticleById } = require('../models/articles.models');
+const { selectArticleById, selectArticles } = require('../models/articles.models');
 
 exports.getArticleById = (req, res, next) => {
     const { article_id } = req.params;
@@ -23,6 +24,16 @@ exports.getArticleById = (req, res, next) => {
         };
 
         res.status(200).send({article: formattedArticle});
+    })
+    .catch((err) => {
+        next(err);
+    });
+}
+
+exports.getArticles = (req, res, next) => {
+    selectArticles()
+    .then((articles) => {
+        res.status(200).send({articles});
     })
     .catch((err) => {
         next(err);
