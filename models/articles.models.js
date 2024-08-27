@@ -1,6 +1,5 @@
 const db = require('../db/connection');
 const format = require('pg-format');
-const articles = require('../db/data/test-data/articles');
 
 exports.selectArticleById = (article_id) => {
     let query = 'SELECT * FROM articles WHERE article_id = %L;';
@@ -32,6 +31,15 @@ exports.selectArticles = () => {
         ON articles.article_id = comments.article_id
         GROUP BY articles.article_id
         ORDER BY articles.created_at DESC;`
+
+    return db.query(query)
+    .then((result) => {
+        return result.rows;
+    });
+}
+
+exports.selectCommentsByArticleId = (article_id) => {
+    const query = format(`SELECT * FROM comments WHERE article_id = %L ORDER BY created_at DESC`, article_id);
 
     return db.query(query)
     .then((result) => {
