@@ -1,6 +1,6 @@
 const articles = require('../db/data/test-data/articles');
 const { convertTimestampToDate } = require('../db/seeds/utils');
-const { selectArticleById, selectArticles } = require('../models/articles.models');
+const { selectArticleById, selectArticles, selectCommentsByArticleId } = require('../models/articles.models');
 
 exports.getArticleById = (req, res, next) => {
     const { article_id } = req.params;
@@ -24,4 +24,21 @@ exports.getArticles = (req, res, next) => {
     .catch((err) => {
         next(err);
     });
+}
+
+exports.getCommentsByArticleId = (req, res, next) => {
+    const { article_id } = req.params;
+
+    selectArticleById(article_id)
+    .then(() => {
+        selectCommentsByArticleId(article_id)
+        .then((comments) => {
+            res.status(200).send({comments});
+        })
+    })
+    .catch((err) => {
+        next(err);
+    });
+
+
 }
