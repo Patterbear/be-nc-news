@@ -71,7 +71,7 @@ describe('GET /api/articles/:article_id', () => {
         return request(app)
         .get('/api/articles/32446254')
         .expect(404)
-        .then((response) =>{
+        .then((response) => {
             expect(response.body.msg).toEqual('not found');
         });
     });
@@ -79,8 +79,36 @@ describe('GET /api/articles/:article_id', () => {
         return request(app)
         .get('/api/articles/AHHHH')
         .expect(400)
-        .then((response) =>{
+        .then((response) => {
             expect(response.body.msg).toEqual('bad request');
+        });
+    });
+});
+
+describe('GET /api/articles', () => {
+    test('returns array of objects with correct properties in descending order of creation', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then((response) => {
+            const articles = response.body.articles;
+
+            expect(Array.isArray(articles)).toBe(true);
+
+            expect(articles).toBeSortedBy('created_at', {descending: true});
+
+            for(article of articles) {
+                expect(article).toMatchObject({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                    comment_count: expect.any(Number)
+                });
+            }
         });
     });
 });
