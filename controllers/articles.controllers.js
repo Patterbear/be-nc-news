@@ -1,13 +1,11 @@
-const { convertTimestampToDate } = require('../db/seeds/utils');
-const { selectArticleById, selectArticles, selectCommentsByArticleId, insertCommentByArticleId } = require('../models/articles.models');
+const { convertTimestampToDate, convertDateToTimestamp } = require('../db/seeds/utils');
+const { selectArticleById, selectArticles, selectCommentsByArticleId, insertCommentByArticleId, updateArticleById } = require('../models/articles.models');
 
 exports.getArticleById = (req, res, next) => {
     const { article_id } = req.params;
 
     selectArticleById(article_id)
     .then((article) => {
-        article = convertTimestampToDate(article)
-
         res.status(200).send({article});
     })
     .catch((err) => {
@@ -51,6 +49,17 @@ exports.postCommentByArticleId = (req, res, next) => {
     .catch((err) => {
         next(err);
     });
+}
 
+exports.patchArticleById = (req, res, next) => {
+    const { article_id } = req.params;
+    const articleUpdate = req.body;
 
+    updateArticleById(article_id, articleUpdate)
+    .then((article) => {
+        res.status(200).send({article});
+    })
+    .catch((err) => {
+        next(err);
+    });
 }
