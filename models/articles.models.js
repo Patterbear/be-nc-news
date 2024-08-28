@@ -1,5 +1,6 @@
 const db = require('../db/connection');
 const format = require('pg-format');
+const { formatComments } = require('../db/seeds/utils');
 
 exports.selectArticleById = (article_id) => {
     let query = 'SELECT * FROM articles WHERE article_id = %L;';
@@ -44,5 +45,34 @@ exports.selectCommentsByArticleId = (article_id) => {
     return db.query(query)
     .then((result) => {
         return result.rows;
+    });
+}
+
+exports.insertCommentByArticleId = (article_id, comment) => {
+
+    comment.article_id = article_id;
+    comment.votes = 0;
+    comment.created_at = Date.now();
+
+    comment = formatComments([comment], article_id)[0];
+
+    const formattedComment = [
+        comment.body,
+        comment.article_id,
+        comment.username,
+        comment.votes,
+        comment.created_at
+    ];
+
+    const query = format(`
+        INSERT INTO comments(body, article_id, author, votes, created_at)
+        VALUES (%L)
+        RETURNING *`,
+        formattedComment
+    );
+
+    return db.query(query)
+    .then((result) => {
+        return result.rows[0];
     });
 }
