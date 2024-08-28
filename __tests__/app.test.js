@@ -161,3 +161,63 @@ describe('GET /api/articles/:article_id/comments', () => {
         });
     });
 });
+
+describe('POST /api/articles/:article_id/comments', () => {
+    test('returns the newly added comment object', () => {
+        const newComment = {
+            username: 'lurker',
+            body: 'I dislike this article.',
+        };
+
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send(newComment)
+        .set('Accept', 'application/json')
+        .expect(201)
+        .then((response) => {
+            const responseComment = response.body.comment;
+
+            expect(responseComment.author).toEqual(newComment.username);
+            expect(responseComment.body).toEqual(newComment.body);
+        });
+    });
+    test('new comment is added to the comments table', () => {
+        const newComment = {
+            username: 'lurker',
+            body: 'I dislike this article.',
+        };
+
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send(newComment)
+        .set('Accept', 'application/json')
+        .expect(201)
+        .then(() => {
+            return request(app)
+            .get('/api/articles/1/comments')
+            .expect(200)
+            .then((response) => {
+                const latestComment = response.body.comments[0];
+
+                expect(latestComment.author).toEqual(newComment.username);
+                expect(latestComment.body).toEqual(newComment.body);
+            });
+        });
+    });
+    test('returns 404 error message if given correctly formatted article ID that does not exist', () => {
+        return request(app)
+        .get('/api/articles/32446254/comments')
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toEqual('not found');
+        });
+    });
+    test('returns 400 error message if given article ID has invalid format', () => {
+        return request(app)
+        .get('/api/articles/AHHHH/comments')
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toEqual('bad request');
+        });
+    });
+});
