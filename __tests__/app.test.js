@@ -212,20 +212,83 @@ describe('POST /api/articles/:article_id/comments', () => {
             });
         });
     });
-    test('returns 404 error message if given correctly formatted article ID that does not exist', () => {
+    test('returns 201 and adds comment to table despite unnecessary fields', () => {
+        const newComment = {
+            username: 'lurker',
+            body: 'I dislike this article.',
+            age: 22,
+            necessary: false,
+        };
+
         return request(app)
-        .get('/api/articles/32446254/comments')
+        .post('/api/articles/1/comments')
+        .send(newComment)
+        .set('Accept', 'application/json')
+        .expect(201)
+        .then((response) => {
+            const responseComment = response.body.comment;
+
+            expect(responseComment.author).toEqual(newComment.username);
+            expect(responseComment.body).toEqual(newComment.body);
+        });
+    });
+    test('returns 404 error message if given correctly formatted article ID that does not exist', () => {
+        const newComment = {
+            username: 'lurker',
+            body: 'I dislike this article.',
+        };
+
+        return request(app)
+        .post('/api/articles/16756/comments')
+        .send(newComment)
+        .set('Accept', 'application/json')
         .expect(404)
         .then((response) => {
-            expect(response.body.msg).toEqual('not found');
+            expect(response.body.msg).toBe('not found');
+        });
+    });
+    test('returns 404 error message if given username does not exist', () => {
+        const newComment = {
+            username: 'idonotexist',
+            body: 'I wish I existed!',
+        };
+
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send(newComment)
+        .set('Accept', 'application/json')
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe('not found');
         });
     });
     test('returns 400 error message if given article ID has invalid format', () => {
+        const newComment = {
+            username: 'lurker',
+            body: 'I dislike this article.',
+        };
+
         return request(app)
-        .get('/api/articles/AHHHH/comments')
+        .post('/api/articles/AUUUUGHHHH/comments')
+        .send(newComment)
+        .set('Accept', 'application/json')
         .expect(400)
         .then((response) => {
-            expect(response.body.msg).toEqual('bad request');
+            expect(response.body.msg).toBe('bad request');
+        });
+    });
+    test('returns 400 error message if request body has missing fields', () => {
+        const newComment = {
+            body: 'Where is my username???'
+        };
+
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send(newComment)
+        .set('Accept', 'application/json')
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('bad request');
         });
     });
 });

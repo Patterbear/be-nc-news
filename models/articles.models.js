@@ -49,23 +49,16 @@ exports.selectCommentsByArticleId = (article_id) => {
 }
 
 exports.insertCommentByArticleId = (article_id, comment) => {
-
-    comment.article_id = article_id;
-    comment.votes = 0;
-    comment.created_at = Date.now();
-
     comment = formatComments([comment], article_id)[0];
 
     const formattedComment = [
         comment.body,
-        comment.article_id,
-        comment.username,
-        comment.votes,
-        comment.created_at
+        article_id,
+        comment.username
     ];
 
     const query = format(`
-        INSERT INTO comments(body, article_id, author, votes, created_at)
+        INSERT INTO comments(body, article_id, author)
         VALUES (%L)
         RETURNING *`,
         formattedComment
