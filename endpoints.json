@@ -78,5 +78,11 @@
         "created_at": "2020-11-03T21:00:00.000Z"
       }
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes comment object with matching ID",
+    "queries": [],
+    "params": {"comment_id": 1},
+    "exampleResponse": {}
   }
 }

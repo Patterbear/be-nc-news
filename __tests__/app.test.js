@@ -358,3 +358,56 @@ describe('PATCH /api/article/:article_id', () => {
         });
     });
 });
+
+
+describe('DELETE /api/comments/:comment_id', () => {
+    test('responds with 204 and no content', () => {
+        return request(app)
+        .delete('/api/comments/1')
+        .expect(204)
+        .then((response) => {
+            expect(response.body).toEqual({});
+        });
+    });
+    test('deletes comment from comments table', () => {
+        return request(app)
+        .delete('/api/comments/1')
+        .expect(204)
+        .then(() => {
+            return request(app)
+            .get('/api/articles/9/comments')
+            .expect(200)
+            .then((response) => {
+                const comments = response.body.comments;
+
+                for(comment of comments) {
+                    expect(comment).not.toEqual({
+                        comment_id: 1,
+                        body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+                        votes: 16,
+                        author: "butter_bridge",
+                        article_id: 9,
+                        created_at: 1586179020000,
+                    });
+                }
+            });
+        });
+    });
+    test('returns 404 error message if given correctly formatted comment ID that does not exist', () => {
+        return request(app)
+        .delete('/api/comments/1322334432')
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe('not found');
+        });
+    });
+    test('returns 400 error message if given comment ID has invalid format', () => {
+        return request(app)
+        .delete('/api/comments/AHHHH')
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('bad request');
+        });
+    });
+
+});
