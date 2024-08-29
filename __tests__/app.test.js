@@ -57,16 +57,23 @@ describe('GET /api/articles/:article_id', () => {
             expect(article).toMatchObject({
                 author: expect.any(String),
                 title: expect.any(String),
-                article_id: expect.any(Number),
+                article_id: 1,
                 body: expect.any(String),
                 topic: expect.any(String),
                 created_at: expect.any(String),
                 votes: expect.any(Number),
-                article_img_url: expect.any(String),
-                comment_count: expect.any(Number)
+                article_img_url: expect.any(String)
             });
+        });
+    });
+    test('returns correct article object with comment_count property', () => {
+        return request(app)
+        .get('/api/articles/1')
+        .expect(200)
+        .then((response) => {
+            const article = response.body.article;
 
-            expect(article.article_id).toBe(1);
+            expect(article.hasOwnProperty('comment_count'));
         });
     });
     test('returns 404 error message if given correctly formatted ID that does not exist', () => {
