@@ -17,7 +17,26 @@ exports.selectArticleById = (article_id) => {
     })
 }
 
-exports.selectArticles = () => {
+exports.selectArticles = (sort_by = 'created_at', order = 'desc') => {
+    const validSortBys = [
+        'article_id',
+        'topic',
+        'author',
+        'created_at',
+        'votes',
+        'comment_count' // not sure if this one is valid
+    ];
+
+    if(!validSortBys.includes(sort_by)) {
+        return Promise.reject({status: 400, msg: 'bad request'});
+    }
+
+    const validOrders = ['asc', 'desc'];
+
+    if(!validOrders.includes(order)) {
+        return Promise.reject({status: 400, msg: 'bad request'});
+    }
+
     const query = `
         SELECT articles.article_id,
         articles.title,
@@ -31,7 +50,7 @@ exports.selectArticles = () => {
         LEFT JOIN comments
         ON articles.article_id = comments.article_id
         GROUP BY articles.article_id
-        ORDER BY articles.created_at DESC;`
+        ORDER BY ${sort_by} ${order.toUpperCase()};` // I think it's ok to insert them like this as I validated them earlier?
 
     return db.query(query)
     .then((result) => {
