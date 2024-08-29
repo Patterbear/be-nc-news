@@ -43,12 +43,6 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic) => {
         return Promise.reject({status: 400, msg: 'bad request'});
     }
 
-    let topicFilter = '';
-
-    if(topic) {
-        topicFilter = ` WHERE topic = ${topic}`;
-    }
-
     let query = `
         SELECT articles.article_id,
         articles.title,
@@ -74,10 +68,25 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic) => {
         GROUP BY articles.article_id
         ORDER BY ${sort_by} ${order.toUpperCase()};`
 
-    return db.query(query, queryParams)
-    .then((result) => {
-        return result.rows;
-    });
+    if(topic) {
+        return db.query(`SELECT * FROM topics WHERE slug = $1`, [topic])
+        .then((result) => {
+            if(result.rows.length === 0) {
+                return Promise.reject({status: 404, msg: 'not found'})
+            } else {
+                return db.query(query, queryParams)
+                .then((result) => {
+                    return result.rows;
+                });
+            }
+        })
+    } else {
+        return db.query(query, queryParams)
+        .then((result) => {
+            return result.rows;
+        });
+    }
+
 }
 
 exports.selectCommentsByArticleId = (article_id) => {

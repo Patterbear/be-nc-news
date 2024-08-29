@@ -156,9 +156,9 @@ describe('GET /api/articles', () => {
             }
         });
     });
-    test('returns empty array when given topic that no articles are under', () => {
+    test('returns empty array when given existing topic that no articles are under', () => {
         return request(app)
-        .get('/api/articles?topic=AHHHHH')
+        .get('/api/articles?topic=paper')
         .expect(200)
         .then((response) => {
             const articles = response.body.articles;
@@ -208,6 +208,14 @@ describe('GET /api/articles', () => {
         .expect(400)
         .then((response) => {
             expect(response.body.msg).toBe('bad request');
+        });
+    });
+    test('returns 404 error if given topic does not exist', () => {
+        return request(app)
+        .get('/api/articles?topic=AHHHHH')
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe('not found');
         });
     });
 });
