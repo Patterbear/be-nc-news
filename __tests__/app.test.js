@@ -88,7 +88,7 @@ describe('GET /api/articles/:article_id', () => {
 
 
 describe('GET /api/articles', () => {
-    test('returns array of objects with correct properties in descending order of creation', () => {
+    test('returns array of objects with correct properties in default order', () => {
         return request(app)
         .get('/api/articles')
         .expect(200)
@@ -113,6 +113,103 @@ describe('GET /api/articles', () => {
                     comment_count: expect.any(Number)
                 });
             }
+        });
+    });
+    test('returns array of objects with correct properties in given order', () => {
+        return request(app)
+        .get('/api/articles?order=asc')
+        .expect(200)
+        .then((response) => {
+            const articles = response.body.articles;
+
+            expect(Array.isArray(articles)).toBe(true);
+
+            expect(articles.length > 0).toBe(true);
+
+            expect(articles).toBeSortedBy('created_at', {descending: false});
+
+            for(article of articles) {
+                expect(article).toMatchObject({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                    comment_count: expect.any(Number)
+                });
+            }
+        });
+    });
+    test('returns array of objects with correct properties by given column', () => {
+        return request(app)
+        .get('/api/articles?sort_by=article_id')
+        .expect(200)
+        .then((response) => {
+            const articles = response.body.articles;
+
+            expect(Array.isArray(articles)).toBe(true);
+
+            expect(articles.length > 0).toBe(true);
+
+            expect(articles).toBeSortedBy('article_id', {descending: true});
+
+            for(article of articles) {
+                expect(article).toMatchObject({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                    comment_count: expect.any(Number)
+                });
+            }
+        });
+    });
+    test('returns array of objects with correct properties in given order by given column', () => {
+        return request(app)
+        .get('/api/articles?sort_by=article_id&order=asc')
+        .expect(200)
+        .then((response) => {
+            const articles = response.body.articles;
+
+            expect(Array.isArray(articles)).toBe(true);
+
+            expect(articles.length > 0).toBe(true);
+
+            expect(articles).toBeSortedBy('article_id', {descending: false});
+
+            for(article of articles) {
+                expect(article).toMatchObject({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                    comment_count: expect.any(Number)
+                });
+            }
+        });
+    });
+    test('returns 400 error if given column is invalid', () => {
+        return request(app)
+        .get('/api/articles?sort_by=i_am_not_a_column')
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('bad request');
+        });
+    });
+    test('returns 400 error if given order is invalid', () => {
+        return request(app)
+        .get('/api/articles?order=random')
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('bad request');
         });
     });
 });
