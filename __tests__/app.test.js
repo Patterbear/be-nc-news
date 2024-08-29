@@ -12,7 +12,7 @@ afterAll(() => {
 });
 
 describe('GET /api/topics', () => {
-    test('returns array of objects with correct properties', () => {
+    test('returns array of topic objects with correct properties', () => {
         return request(app)
         .get('/api/topics')
         .expect(200)
@@ -89,7 +89,7 @@ describe('GET /api/articles/:article_id', () => {
 
 
 describe('GET /api/articles', () => {
-    test('returns array of objects with correct properties in default order', () => {
+    test('returns array of article objects with correct properties in default order', () => {
         return request(app)
         .get('/api/articles')
         .expect(200)
@@ -116,7 +116,7 @@ describe('GET /api/articles', () => {
             }
         });
     });
-    test('returns array of objects with correct properties in given order', () => {
+    test('returns array of article objects with correct properties in given order', () => {
         return request(app)
         .get('/api/articles?order=asc')
         .expect(200)
@@ -143,7 +143,7 @@ describe('GET /api/articles', () => {
             }
         });
     });
-    test('returns array of objects with correct properties by given column', () => {
+    test('returns array of article objects with correct properties by given column', () => {
         return request(app)
         .get('/api/articles?sort_by=article_id')
         .expect(200)
@@ -223,7 +223,7 @@ describe('GET /api/articles', () => {
             }
         });
     });
-    test('returns array of objects with correct properties in given order by given column', () => {
+    test('returns array of article objects with correct properties in given order by given column', () => {
         return request(app)
         .get('/api/articles?sort_by=article_id&order=asc')
         .expect(200)
@@ -611,7 +611,7 @@ describe('DELETE /api/comments/:comment_id', () => {
 
 
 describe('GET /api/users', () => {
-    test('returns array of objects with correct properties', () => {
+    test('returns array of user objects with correct properties', () => {
         return request(app)
         .get('/api/users')
         .expect(200)
