@@ -169,6 +169,59 @@ describe('GET /api/articles', () => {
             }
         });
     });
+    test('returns array of article objects which match given topic', () => {
+        return request(app)
+        .get('/api/articles?topic=mitch')
+        .expect(200)
+        .then((response) => {
+            const articles = response.body.articles;
+
+            expect(Array.isArray(articles)).toBe(true);
+
+            expect(articles.length > 0).toBe(true);
+
+            for(article of articles) {
+                expect(article.topic).toBe('mitch');
+            }
+        });
+    });
+    test('returns empty array when given topic that no articles are under', () => {
+        return request(app)
+        .get('/api/articles?topic=AHHHHH')
+        .expect(200)
+        .then((response) => {
+            const articles = response.body.articles;
+
+            expect(articles).toEqual([]);
+        });
+    });
+    test('returns array of article objects of a certain topic with correct properties in given order by given column', () => {
+        return request(app)
+        .get('/api/articles?sort_by=article_id&order=asc&topic=mitch')
+        .expect(200)
+        .then((response) => {
+            const articles = response.body.articles;
+
+            expect(Array.isArray(articles)).toBe(true);
+
+            expect(articles.length > 0).toBe(true);
+
+            expect(articles).toBeSortedBy('article_id', {descending: false});
+
+            for(article of articles) {
+                expect(article).toMatchObject({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: 'mitch',
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                    comment_count: expect.any(Number)
+                });
+            }
+        });
+    });
     test('returns array of objects with correct properties in given order by given column', () => {
         return request(app)
         .get('/api/articles?sort_by=article_id&order=asc')
