@@ -9,7 +9,7 @@ exports.selectArticleById = (article_id) => {
         LEFT JOIN comments
         ON articles.article_id = comments.article_id
         WHERE articles.article_id = %L
-        GROUP BY articles.article_id`
+        GROUP BY articles.article_id;`
 
     query = format(query, article_id);
 
@@ -30,7 +30,7 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic) => {
         'author',
         'created_at',
         'votes',
-        'comment_count' // not sure if this one is valid
+        'comment_count'
     ];
 
     if(!validSortBys.includes(sort_by)) {
@@ -72,7 +72,7 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic) => {
     
     query += `
         GROUP BY articles.article_id
-        ORDER BY ${sort_by} ${order.toUpperCase()};` // I think it's ok to insert them like this as I validated them earlier?
+        ORDER BY ${sort_by} ${order.toUpperCase()};`
 
     return db.query(query, queryParams)
     .then((result) => {
@@ -81,7 +81,7 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic) => {
 }
 
 exports.selectCommentsByArticleId = (article_id) => {
-    const query = format(`SELECT * FROM comments WHERE article_id = %L ORDER BY created_at DESC`, article_id);
+    const query = format(`SELECT * FROM comments WHERE article_id = %L ORDER BY created_at DESC;`, article_id);
 
     return db.query(query)
     .then((result) => {
@@ -101,7 +101,7 @@ exports.insertCommentByArticleId = (article_id, comment) => {
     const query = format(`
         INSERT INTO comments(body, article_id, author)
         VALUES (%L)
-        RETURNING *`,
+        RETURNING *;`,
         formattedComment
     );
 
@@ -120,7 +120,7 @@ exports.updateArticleById = (article_id, articleUpdate) => {
         `UPDATE articles
         SET votes = votes + $1
         WHERE article_id = $2
-        RETURNING *`;
+        RETURNING *;`;
 
     return db.query(query, [articleUpdate.inc_votes, article_id])
     .then((result) => {
