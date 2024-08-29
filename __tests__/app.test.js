@@ -62,7 +62,8 @@ describe('GET /api/articles/:article_id', () => {
                 topic: expect.any(String),
                 created_at: expect.any(String),
                 votes: expect.any(Number),
-                article_img_url: expect.any(String)
+                article_img_url: expect.any(String),
+                comment_count: expect.any(Number)
             });
 
             expect(article.article_id).toBe(1);
