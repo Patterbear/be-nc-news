@@ -71,6 +71,10 @@ exports.insertCommentByArticleId = (article_id, comment) => {
 }
 
 exports.updateArticleById = (article_id, articleUpdate) => {
+    if(!articleUpdate.inc_votes) {
+        articleUpdate.inc_votes = 0;
+    }
+
     const query =
         `UPDATE articles
         SET votes = votes + $1
@@ -79,10 +83,6 @@ exports.updateArticleById = (article_id, articleUpdate) => {
 
     return db.query(query, [articleUpdate.inc_votes, article_id])
     .then((result) => {
-        if(result.rows.length !== 0) {
-            return result.rows[0];
-        } else {
-            return Promise.reject({status: 404, msg: 'not found'});
-        }
+        return result.rows[0];
     });
 };

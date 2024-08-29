@@ -317,7 +317,7 @@ describe('PATCH /api/article/:article_id', () => {
             });
         });
     });
-    test('article has its vote count updated by given value', () => {
+    test('article has its vote count increased by given value', () => {
         const articleUpdate = { inc_votes: 150 };
 
         return request(app)
@@ -333,6 +333,53 @@ describe('PATCH /api/article/:article_id', () => {
 
                 expect(article.votes).toBe(250);
             });
+        });
+    });
+    test('article has its vote count decreased by given value', () => {
+        const articleUpdate = { inc_votes: -100 };
+
+        return request(app)
+        .patch('/api/articles/1')
+        .send(articleUpdate)
+        .expect(200)
+        .then(() => {
+            return request(app)
+            .get('/api/articles/1')
+            .expect(200)
+            .then((response) => {
+                const article = response.body.article;
+
+                expect(article.votes).toBe(0);
+            });
+        });
+    });
+    test('returns 200 and article vote count unchanged when inc_votes is not in the body', () => {
+        const articleUpdate = {};
+
+        return request(app)
+        .patch('/api/articles/1')
+        .send(articleUpdate)
+        .expect(200)
+        .then(() => {
+            return request(app)
+            .get('/api/articles/1')
+            .expect(200)
+            .then((response) => {
+                const article = response.body.article;
+
+                expect(article.votes).toBe(100);
+            });
+        });
+    });
+    test('returns 400 error message if body contains invalid inc_votes property', () => {
+        const articleUpdate = { inc_votes: 'AHHHH' };
+
+        return request(app)
+        .patch('/api/articles/1')
+        .send(articleUpdate)
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('bad request');
         });
     });
     test('returns 404 error message if given correctly formatted article ID that does not exist', () => {

@@ -51,9 +51,9 @@ exports.patchArticleById = (req, res, next) => {
     const { article_id } = req.params;
     const articleUpdate = req.body;
 
-    updateArticleById(article_id, articleUpdate)
-    .then((article) => {
-        res.status(200).send({article});
+    return Promise.all([selectArticleById(article_id), updateArticleById(article_id, articleUpdate)])
+    .then((results) => {
+        res.status(200).send({article: results[1]});
     })
     .catch((err) => {
         next(err);
