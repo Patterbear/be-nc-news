@@ -3,7 +3,13 @@ const format = require('pg-format');
 const { formatComments } = require('../db/seeds/utils');
 
 exports.selectArticleById = (article_id) => {
-    let query = 'SELECT * FROM articles WHERE article_id = %L;';
+    let query = `
+        SELECT articles.*, COUNT(comments.article_id)::INTEGER AS comment_count
+        FROM articles
+        LEFT JOIN comments
+        ON articles.article_id = comments.article_id
+        WHERE articles.article_id = %L
+        GROUP BY articles.article_id`
 
     query = format(query, article_id);
 
