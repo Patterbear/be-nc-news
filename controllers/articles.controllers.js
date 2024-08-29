@@ -1,4 +1,3 @@
-const { convertTimestampToDate, convertDateToTimestamp } = require('../db/seeds/utils');
 const { selectArticleById, selectArticles, selectCommentsByArticleId, insertCommentByArticleId, updateArticleById } = require('../models/articles.models');
 
 exports.getArticleById = (req, res, next) => {
