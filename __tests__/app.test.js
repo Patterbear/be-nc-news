@@ -617,3 +617,100 @@ describe('GET /api/users/:username', () => {
         });
     });
 });
+
+
+describe('PATCH /api/comment/:comment_id', () => {
+    test('responds with updated comment object', () => {
+        const commentUpdate = { inc_votes: 4 };
+
+        return request(app)
+        .patch('/api/comments/1')
+        .send(commentUpdate)
+        .expect(200)
+        .then((response) => {
+            const responseComment = response.body.comment;
+            expect(responseComment).toEqual({
+                comment_id: 1,
+                body: expect.any(String),
+                votes: 20,
+                author: expect.any(String),
+                article_id: 9,
+                created_at: expect.any(String)
+            });
+        });
+    });
+    test('comment has its vote count increased by given value', () => {
+        const commentUpdate = { inc_votes: 4 };
+
+        return request(app)
+        .patch('/api/comments/1')
+        .send(commentUpdate)
+        .expect(200)
+        .then((response) => {
+            const responseComment = response.body.comment;
+
+            expect(responseComment.votes).toBe(20);
+        });
+    });
+    test('comment has its vote count decreased by given value', () => {
+        const commentUpdate = { inc_votes: -6 };
+
+        return request(app)
+        .patch('/api/comments/1')
+        .send(commentUpdate)
+        .expect(200)
+        .then((response) => {
+            const responseComment = response.body.comment;
+            
+            expect(responseComment.votes).toBe(10);
+        });
+    });
+    test('returns 200 and comment vote count unchanged when inc_votes is not in the body', () => {
+        const commentUpdate = {};
+
+        return request(app)
+        .patch('/api/comments/1')
+        .send(commentUpdate)
+        .expect(200)
+        .then((response) => {
+            const responseComment = response.body.comment;
+            
+            expect(responseComment.votes).toBe(16);
+        });
+    });
+    test('returns 400 error message if body contains invalid inc_votes property', () => {
+        const commentUpdate = { inc_votes: 'AHHHH' };
+
+        return request(app)
+        .patch('/api/comments/1')
+        .send(commentUpdate)
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('bad request');
+        });
+    });
+    test('returns 404 error message if given correctly formatted article ID that does not exist', () => {
+        const commentUpdate = { inc_votes: 4 };
+
+        return request(app)
+        .patch('/api/comments/1365464')
+        .send(commentUpdate)
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe('not found');
+        });
+    });
+    test('returns 400 error message if given comment ID has invalid format', () => {
+        const commentUpdate = { inc_votes: 4 };
+
+        return request(app)
+        .patch('/api/comments/AAAAAAAAAAAAAAAAAAAAH')
+        .send(commentUpdate)
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('bad request');
+        });
+    });
+});
+
+
