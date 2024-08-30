@@ -110,8 +110,14 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic, limit =
 
 }
 
-exports.selectCommentsByArticleId = (article_id) => {
-    const query = format(`SELECT * FROM comments WHERE article_id = %L ORDER BY created_at DESC;`, article_id);
+exports.selectCommentsByArticleId = (article_id, limit = 5, p = 1) => {
+    const query = format(`
+        SELECT * FROM comments
+        WHERE article_id = %L
+        ORDER BY created_at DESC
+        LIMIT ${limit}
+        OFFSET ${(p - 1) * limit};`,
+        article_id);
 
     return db.query(query)
     .then((result) => {

@@ -11,7 +11,7 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all articles and count of articles matching the query",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": ["author", "topic", "sort_by", "order", "limit", "p"],
     "exampleResponse": {
       "articles": [
         {
@@ -46,7 +46,7 @@
   },
   "GET /api/articles/:article_id/comments": {
     "description": "serves an array of comment objects belonging to an article",
-    "queries": [],
+    "queries": ["limit", "p"],
     "params": {"article_id": 1},
     "exampleResponse": {
       "comments": [
