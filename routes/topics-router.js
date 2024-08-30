@@ -1,9 +1,14 @@
-const { getTopics } = require('../controllers/topics.controllers');
+const { getTopics, postTopic } = require('../controllers/topics.controllers');
 const topicsRouter = require('express').Router();
 
 
-topicsRouter.get('/', (req, res, next) => {
+topicsRouter
+.route('/')
+.get((req, res, next) => {
     getTopics(req, res, next);
+})
+.post((req, res, next) => {
+    postTopic(req, res, next);
 });
 
 
