@@ -291,6 +291,18 @@ describe('GET /api/articles/:article_id/comments', () => {
             expect(comments).toEqual([]);
         });
     });
+    test('returns chosen page of comment objects whose length is determined in the query', () => {
+        return request(app)
+        .get('/api/articles/1/comments?limit=2&p=2')
+        .expect(200)
+        .then((response) => {
+            expect(response.body.comments.length).toBe(2);
+
+            const firstComment = response.body.comments[0];
+
+            expect(firstComment.comment_id).toBe(18);
+        });
+    });
     test('returns 404 error message if given correctly formatted article ID that does not exist', () => {
         return request(app)
         .get('/api/articles/32446254/comments')
