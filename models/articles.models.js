@@ -23,7 +23,7 @@ exports.selectArticleById = (article_id) => {
     })
 }
 
-exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic) => {
+exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic, limit = 10, p = 1) => {
     const validSortBys = [
         'article_id',
         'topic',
@@ -40,6 +40,10 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic) => {
     const validOrders = ['asc', 'desc'];
 
     if(!validOrders.includes(order)) {
+        return Promise.reject({status: 400, msg: 'bad request'});
+    }
+
+    if(!(Number.isInteger(Number(limit)) && Number(limit) > 0 && Number.isInteger(Number(p)) && Number(p) > 0)) {
         return Promise.reject({status: 400, msg: 'bad request'});
     }
 
@@ -63,29 +67,46 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic) => {
         WHERE topic = $1`;
         queryParams.push(topic);
     }
-    
-    query += `
-        GROUP BY articles.article_id
-        ORDER BY ${sort_by} ${order.toUpperCase()};`
 
-    if(topic) {
-        return db.query(`SELECT * FROM topics WHERE slug = $1`, [topic])
-        .then((result) => {
-            if(result.rows.length === 0) {
-                return Promise.reject({status: 404, msg: 'not found'})
-            } else {
-                return db.query(query, queryParams)
-                .then((result) => {
-                    return result.rows;
-                });
-            }
-        })
-    } else {
-        return db.query(query, queryParams)
-        .then((result) => {
-            return result.rows;
-        });
-    }
+    query += `
+        GROUP BY articles.article_id,
+        articles.title,
+        articles.topic,
+        articles.author,
+        articles.created_at,
+        articles.votes,
+        articles.article_img_url`;
+
+    return db.query(query, queryParams)
+    .then((result) => {
+        const total_count = result.rows.length;
+
+        query += `
+        ORDER BY ${sort_by} ${order.toUpperCase()}
+        LIMIT ${limit}
+        OFFSET ${(p - 1) * limit};`
+
+        if(topic) {
+            return db.query(`SELECT * FROM topics WHERE slug = $1`, [topic])
+            .then((result) => {
+                if(result.rows.length === 0) {
+                    return Promise.reject({status: 404, msg: 'not found'})
+                } else {
+                    return db.query(query, queryParams)
+                    .then((result) => {
+                        return [result.rows, total_count];
+                    });
+                }
+            });
+        } else {
+            return db.query(query, queryParams)
+            .then((result) => {
+                return [result.rows, total_count];
+            });
+        }
+    });
+    
+
 
 }
 

@@ -202,6 +202,34 @@ describe('GET /api/articles', () => {
             expect(articles).toBeSortedBy('article_id', {descending: false});
         });
     });
+    test('returns array of article objects whose length is determined in the query', () => {
+        return request(app)
+        .get('/api/articles?limit=3')
+        .expect(200)
+        .then((response) => {
+            const articles = response.body.articles;
+
+            expect(articles.length).toBe(3);
+        });
+    });
+    test('returns chosen page of article objects whose length is determined in the query', () => {
+        return request(app)
+        .get('/api/articles?limit=5&p=2')
+        .expect(200)
+        .then((response) => {
+            const firstArticle = response.body.articles[0];
+
+            expect(firstArticle.article_id).toBe(5);
+        });
+    });
+    test('returns total number of articles matching the query despite limit', () => {
+        return request(app)
+        .get('/api/articles?topic=mitch&limit=1')
+        .expect(200)
+        .then((response) => {
+            expect(response.body.total_count).toBe(12);
+        });
+    });
     test('returns 400 error if given column is invalid', () => {
         return request(app)
         .get('/api/articles?sort_by=i_am_not_a_column')

@@ -13,11 +13,14 @@ exports.getArticleById = (req, res, next) => {
 }
 
 exports.getArticles = (req, res, next) => {
-    const { sort_by, order, topic } = req.query;
+    const { sort_by, order, topic, limit, p } = req.query;
 
-    selectArticles(sort_by, order, topic)
-    .then((articles) => {
-        res.status(200).send({articles});
+    selectArticles(sort_by, order, topic, limit, p)
+    .then((result) => {
+        const articles = result[0];
+        const total_count = result[1];
+
+        res.status(200).send({articles, total_count});
     })
     .catch((err) => {
         next(err);
