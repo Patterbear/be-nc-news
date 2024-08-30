@@ -136,3 +136,29 @@ exports.updateArticleById = (article_id, articleUpdate) => {
         return result.rows[0];
     });
 };
+
+exports.insertArticle = (article) => {
+    if(!article.article_img_url) {
+        article.article_img_url = 'https://pix4free.org/assets/library/2021-08-07/originals/default.jpg'
+    }
+
+    const formattedArticle = [
+        article.author,
+        article.title,
+        article.body,
+        article.topic,
+        article.article_img_url
+    ];
+
+    const query = format(`
+        INSERT INTO articles(author, title, body, topic, article_img_url)
+        VALUES (%L)
+        RETURNING *, 0 AS comment_count;`,
+        formattedArticle
+    );
+
+    return db.query(query)
+    .then((result) => {
+        return result.rows[0];
+    });
+}

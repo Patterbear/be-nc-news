@@ -118,5 +118,57 @@
         }
       ]
     }
+  },
+  "GET /api/users/:username": {
+    "description": "serves the user with the given username",
+    "queries": [],
+    "params": {"username": "butter_bridge"},
+    "exampleResponse": {
+      "users":
+      {
+        "username": "butter_bridge",
+        "name": "jonny",
+        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+      }
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates votes property of a chosen comment",
+    "queries": [],
+    "params": {"comment_id":5},
+    "body": {"inc_votes": 50},
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 5,
+        "body": "I hate streaming noses",
+        "article_id": 1,
+        "author": "icellusedkars",
+        "votes": 100,
+        "created_at": "2020-11-03T21:00:00.000Z"
+      }
+    }
+  },
+  "POST /api/articles": {
+    "description": "posts an article object to articles table",
+    "queries": [],
+    "body": {
+      "author": "butter_bridge",
+      "title": "Living in the shadow of a great man",
+      "body": "I find this existence challenging",
+      "topic": "mitch",
+      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+    },
+    "exampleResponse": {
+      "article": {
+        "author": "butter_bridge",
+        "title": "Living in the shadow of a great man",
+        "article_id": 1,
+        "body": "I find this existence challenging",
+        "topic": "mitch",
+        "created_at": "2020-07-09T20:11:00.000Z",
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+    }
   }
 }

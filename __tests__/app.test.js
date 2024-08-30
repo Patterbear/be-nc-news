@@ -4,6 +4,7 @@ const app = require('../app');
 const seed = require('../db/seeds/seed');
 const db = require('../db/connection');
 const request = require('supertest');
+const articles = require('../db/data/test-data/articles');
 
 beforeEach(() => seed(testData));
 
@@ -714,3 +715,110 @@ describe('PATCH /api/comment/:comment_id', () => {
 });
 
 
+describe('POST /api/articles', () => {
+    test('returns the newly added article object', () => {
+        const newArticle = {
+            author: 'lurker',
+            title: 'Destroying Southprogrammers',
+            body: 'Too long have we been pestered by Southcoders. I propose we eliminate them using cats.',
+            topic: 'cats',
+            article_img_url: 'https://ih1.redbubble.net/image.2452438684.2919/st,small,507x507-pad,600x600,f8f8f8.jpg'
+        };
+
+        return request(app)
+        .post('/api/articles')
+        .send(newArticle)
+        .set('Accept', 'application/json')
+        .expect(201)
+        .then((response) => {
+            const responseArticle = response.body.article;
+
+            expect(responseArticle).toMatchObject({
+                article_id: expect.any(Number),
+                author: 'lurker',
+                title: 'Destroying Southprogrammers',
+                body: 'Too long have we been pestered by Southcoders. I propose we eliminate them using cats.',
+                topic: 'cats',
+                article_img_url: 'https://ih1.redbubble.net/image.2452438684.2919/st,small,507x507-pad,600x600,f8f8f8.jpg',
+                votes: 0,
+                created_at: expect.any(String),
+                comment_count: 0
+            });
+        });
+    });
+    test('new article is added to the articles table', () => {
+        const newArticle = {
+            author: 'lurker',
+            title: 'Destroying Southprogrammers',
+            body: 'Too long have we been pestered by Southcoders. I propose we eliminate them using cats.',
+            topic: 'cats',
+            article_img_url: 'https://ih1.redbubble.net/image.2452438684.2919/st,small,507x507-pad,600x600,f8f8f8.jpg'
+        };
+
+        return request(app)
+        .post('/api/articles')
+        .send(newArticle)
+        .set('Accept', 'application/json')
+        .expect(201)
+        .then(() => {
+            return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then((response) => {
+                const latestArticle = response.body.articles[0];
+
+                expect(latestArticle).toMatchObject({
+                    article_id: expect.any(Number),
+                    author: 'lurker',
+                    title: 'Destroying Southprogrammers',
+                    topic: 'cats',
+                    article_img_url: 'https://ih1.redbubble.net/image.2452438684.2919/st,small,507x507-pad,600x600,f8f8f8.jpg',
+                    votes: 0,
+                    created_at: expect.any(String),
+                    comment_count: 0
+                });
+            });
+        });
+    });
+    test('returns 201 and adds article to table with default article_img_url as one is not provided', () => {
+        const newArticle = {
+            author: 'lurker',
+            title: 'Destroying Southprogrammers',
+            body: 'Too long have we been pestered by Southcoders. I propose we eliminate them using cats.',
+            topic: 'cats'
+        };
+
+        return request(app)
+        .post('/api/articles')
+        .send(newArticle)
+        .set('Accept', 'application/json')
+        .expect(201)
+        .then((response) => {
+            const responseArticle = response.body.article;
+
+            expect(responseArticle).toMatchObject({
+                article_id: expect.any(Number),
+                author: 'lurker',
+                title: 'Destroying Southprogrammers',
+                body: 'Too long have we been pestered by Southcoders. I propose we eliminate them using cats.',
+                topic: 'cats',
+                article_img_url: 'https://pix4free.org/assets/library/2021-08-07/originals/default.jpg',
+                votes: 0,
+                created_at: expect.any(String),
+                comment_count: 0
+            });
+        });
+    });
+    test('returns 400 if given article has missing fields', () => {
+        const newArticle = {};
+
+        return request(app)
+        .post('/api/articles')
+        .send(newArticle)
+        .set('Accept', 'application/json')
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('bad request');
+        });
+    });
+});
