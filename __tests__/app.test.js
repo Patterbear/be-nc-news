@@ -589,3 +589,31 @@ describe('GET /api/users', () => {
         });
     });
 });
+
+
+describe('GET /api/users/:username', () => {
+    test('returns correct article object with correct properties', () => {
+        return request(app)
+        .get('/api/users/icellusedkars')
+        .expect(200)
+        .then((response) => {
+            const user = response.body.user;
+
+            expect(typeof user).toBe('object');
+
+            expect(user).toMatchObject({
+                username: 'icellusedkars',
+                name: 'sam',
+                avatar_url: 'https://avatars2.githubusercontent.com/u/24604688?s=460&v=4'
+            });
+        });
+    });
+    test('returns 404 error message if given username that does not exist', () => {
+        return request(app)
+        .get('/api/users/idonotexist')
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toEqual('not found');
+        });
+    });
+});
