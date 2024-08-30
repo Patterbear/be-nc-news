@@ -171,5 +171,16 @@
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
       }
     }
+  },
+  "POST /api/topics": {
+    "description": "posts a topic object to topics table",
+    "queries": [],
+    "body": {
+      "description": "everything cinema",
+      "slug":"film"
+    },
+    "exampleResponse": {
+      "topic": { "slug": "film", "description": "everything cinema" }
+    }
   }
 }

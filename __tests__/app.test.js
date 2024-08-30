@@ -862,3 +862,64 @@ describe('POST /api/articles', () => {
         });
     });
 });
+
+
+describe('POST /api/topics', () => {
+    test('returns the newly added topic object', () => {
+        const newTopic = {
+            description: 'everything cinema',
+            slug: 'film'
+          }
+
+        return request(app)
+        .post('/api/topics')
+        .send(newTopic)
+        .set('Accept', 'application/json')
+        .expect(201)
+        .then((response) => {
+            const responseTopic = response.body.topic;
+
+            expect(responseTopic).toMatchObject({
+                description: 'everything cinema',
+                slug: 'film'
+            });
+        });
+    });
+    test('new topic is added to the topics table', () => {
+        const newTopic = {
+            description: 'everything cinema',
+            slug: 'film'
+          }
+
+        return request(app)
+        .post('/api/topics')
+        .send(newTopic)
+        .set('Accept', 'application/json')
+        .expect(201)
+        .then(() => {
+            return request(app)
+            .get('/api/topics')
+            .expect(200)
+            .then((response) => {
+                const latestTopic = response.body.topics.at(-1);
+
+                expect(latestTopic).toMatchObject({
+                    description: 'everything cinema',
+                    slug: 'film'
+                });
+            });
+        });
+    });
+    test('returns 400 if given topic has missing fields', () => {
+        const newTopic = {};
+
+        return request(app)
+        .post('/api/topics')
+        .send(newTopic)
+        .set('Accept', 'application/json')
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('bad request');
+        });
+    });
+});
