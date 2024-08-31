@@ -1,4 +1,4 @@
-const { getArticleById, getArticles, getCommentsByArticleId, postCommentByArticleId, patchArticleById, postArticle } = require('../controllers/articles.controllers');
+const { getArticleById, getArticles, getCommentsByArticleId, postCommentByArticleId, patchArticleById, postArticle, deleteArticleById } = require('../controllers/articles.controllers');
 
 const articlesRouter = require('express').Router();
 
@@ -19,6 +19,9 @@ articlesRouter
     })
     .patch((req, res, next) => {
         patchArticleById(req, res, next);
+    })
+    .delete((req, res, next) => {
+        deleteArticleById(req, res, next);
     });
 
 articlesRouter

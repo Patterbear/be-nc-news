@@ -189,3 +189,15 @@ exports.insertArticle = (article) => {
         return result.rows[0];
     });
 }
+
+exports.removeArticleById = (article_id) => {
+    const query = format('DELETE FROM articles WHERE article_id = %L RETURNING *;', article_id);
+
+    return db.query(query)
+    .then((result) => {
+        if (result.rows.length === 0) {
+            return Promise.reject({ status: 404, msg: 'not found' });
+        }
+        return result.rows[0];
+      });
+}

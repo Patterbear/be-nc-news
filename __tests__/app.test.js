@@ -923,3 +923,44 @@ describe('POST /api/topics', () => {
         });
     });
 });
+
+
+describe('DELETE /api/articles/:article_id', () => {
+    test('responds with 204 and no content', () => {
+        return request(app)
+        .delete('/api/articles/1')
+        .expect(204)
+        .then((response) => {
+            expect(response.body).toEqual({});
+        });
+    });
+    test('deletes article from articles table', () => {
+        return request(app)
+        .delete('/api/articles/1')
+        .expect(204)
+        .then(() => {
+            return request(app)
+            .get('/api/articles/1')
+            .expect(404)
+            .then((response) => {
+                expect(response.body.msg).toBe('not found');
+            });
+        });
+    });
+    test('returns 404 error message if given correctly formatted article ID that does not exist', () => {
+        return request(app)
+        .delete('/api/articles/1322334432')
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe('not found');
+        });
+    });
+    test('returns 400 error message if given article ID has invalid format', () => {
+        return request(app)
+        .delete('/api/articles/AHHHH')
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('bad request');
+        });
+    });
+});

@@ -182,5 +182,11 @@
     "exampleResponse": {
       "topic": { "slug": "film", "description": "everything cinema" }
     }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes article object with matching ID",
+    "queries": [],
+    "params": {"article_id": 1},
+    "exampleResponse": {}
   }
 }
